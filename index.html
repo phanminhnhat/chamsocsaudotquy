@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Calm Harmony (Warm neutrals bg-stone-50, dark gray text text-stone-800, soft blue accent bg-sky-600, gentle orange highlight text-amber-600) -->
+    <!-- Application Structure Plan: A task-oriented dashboard for caregivers with 5 core sections: Overview, Motor Skills, Communication, Cognition/Emotion, and Daily Care. This structure prioritizes quick access to actionable information over the linear format of the source reports, empowering caregivers to solve specific problems efficiently. -->
+    <!-- Visualization & Content Choices: Brunnstrom stages visualized as an interactive HTML diagram. Aphasia types as interactive cards. Complications as an expandable grid. Recovery factors and post-stroke conditions as Chart.js bar/donut charts. Exercises organized in filterable accordions. This approach transforms static tables and lists into engaging, easy-to-digest components, enhancing user understanding and retention. Confirmed no SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Cẩm Nang Phục Hồi Sau Đột Quỵ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { color: #0284c7; border-bottom-color: #0284c7; font-weight: 700; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .accordion-button.open + .accordion-content { max-height: 2000px; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center py-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-sky-700 mb-4 md:mb-0" data-i18n="appTitle">Cẩm Nang Phục Hồi Sau Đột Quỵ</h1>
+                <nav id="main-nav" class="flex flex-wrap justify-center gap-x-4 gap-y-2 md:gap-x-8">
+                    <a href="#tong-quan" data-section="tong-quan" class="nav-link text-stone-600 border-b-2 border-transparent hover:text-sky-600 pb-1" data-i18n="navOverview">Tổng Quan</a>
+                    <a href="#van-dong" data-section="van-dong" class="nav-link text-stone-600 border-b-2 border-transparent hover:text-sky-600 pb-1" data-i18n="navMotorSkills">Vận Động</a>
+                    <a href="#giao-tiep" data-section="giao-tiep" class="nav-link text-stone-600 border-b-2 border-transparent hover:text-sky-600 pb-1" data-i18n="navCommunication">Giao Tiếp</a>
+                    <a href="#tu-duy" data-section="tu-duy" class="nav-link text-stone-600 border-b-2 border-transparent hover:text-sky-600 pb-1" data-i18n="navCognitionEmotion">Tư Duy & Tinh Thần</a>
+                    <a href="#cham-soc" data-section="cham-soc" class="nav-link text-stone-600 border-b-2 border-transparent hover:text-sky-600 pb-1" data-i18n="navDailyCare">Chăm Sóc Hàng Ngày</a>
+                </nav>
+                <div class="flex items-center mt-4 md:mt-0">
+                    <button id="lang-vi-btn" class="px-3 py-1 rounded-full text-stone-700 bg-sky-100 hover:bg-sky-200 mr-2 border border-sky-300">VN</button>
+                    <button id="lang-en-btn" class="px-3 py-1 rounded-full text-stone-600 bg-white hover:bg-stone-100 border border-stone-300">EN</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="tong-quan" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="journeyTitle">Hành Trình Phục Hồi Toàn Diện</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="journeyDesc">Phục hồi sau đột quỵ là một quá trình lâu dài, đòi hỏi sự kiên trì và một cách tiếp cận toàn diện. Ứng dụng này cung cấp các chiến lược và thông tin cần thiết để hỗ trợ người chăm sóc, giúp bệnh nhân tối đa hóa khả năng phục hồi, từ vận động, giao tiếp đến tư duy và tinh thần, nhằm nâng cao chất lượng cuộc sống.</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-2xl font-semibold text-sky-700 mb-4" data-i18n="brunnstromTitle">Các Giai Đoạn Phục Hồi Vận Động (Brunnstrom)</h3>
+                <p class="mb-6 text-stone-600" data-i18n="brunnstromDesc">Hiểu rõ các giai đoạn phục hồi giúp bạn nhận biết tiến triển và lựa chọn bài tập phù hợp. Sự xuất hiện của co cứng (Giai đoạn 2-3) là một dấu hiệu tích cực, cho thấy não bộ đang tái tạo kết nối thần kinh. Hãy nhấp vào từng giai đoạn để xem chi tiết.</p>
+                <div id="brunnstrom-stages" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 text-center text-sm"></div>
+                <div id="brunnstrom-details" class="mt-6 p-4 bg-sky-50 rounded-lg text-stone-700 min-h-[100px]"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-2xl font-semibold text-sky-700 mb-4" data-i18n="factorsTitle">Yếu Tố Ảnh Hưởng Đến Phục Hồi</h3>
+                     <p class="mb-4 text-stone-600" data-i18n="factorsDesc">Nhiều yếu tố tác động đến quá trình phục hồi. Việc can thiệp sớm và tích cực vào các yếu tố có thể thay đổi sẽ cải thiện đáng kể tiên lượng cho bệnh nhân.</p>
+                    <div class="chart-container">
+                        <canvas id="factorsChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-2xl font-semibold text-sky-700 mb-4" data-i18n="conditionsTitle">Các Vấn Đề Phổ Biến Sau Đột Quỵ</h3>
+                    <p class="mb-4 text-stone-600" data-i18n="conditionsDesc">Bệnh nhân thường đối mặt với nhiều thách thức về thể chất và tâm lý. Nhận biết sớm các vấn đề này là bước đầu tiên để có biện pháp can thiệp phù hợp.</p>
+                    <div class="chart-container">
+                        <canvas id="conditionsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="van-dong" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="motorRehabTitle">Phục Hồi Chức Năng Vận Động</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="motorRehabDesc">Vật lý trị liệu sớm và liên tục là chìa khóa để lấy lại khả năng vận động, ngăn ngừa biến chứng và giúp bệnh nhân từng bước độc lập. Mục tiêu là tiến triển từ các bài tập thụ động sang chủ động, từ nằm trên giường đến di chuyển.</p>
+            </div>
+            
+            <div id="motor-exercises"></div>
+        </section>
+
+        <section id="giao-tiep" class="content-section">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="commImproveTitle">Cải Thiện Khả Năng Giao Tiếp</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="commImproveDesc">Giao tiếp là cầu nối với thế giới. Khi lời nói gặp khó khăn, các liệu pháp ngôn ngữ và công nghệ hỗ trợ sẽ mở ra những cánh cửa mới, giúp bệnh nhân bày tỏ suy nghĩ, cảm xúc và giảm cảm giác bị cô lập.</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-2xl font-semibold text-sky-700 mb-4" data-i18n="langDisorderTitle">Các Dạng Rối Loạn Ngôn Ngữ Phổ Biến</h3>
+                <p class="mb-4 text-stone-600" data-i18n="langDisorderDesc">Tùy vào vùng não bị tổn thương, bệnh nhân có thể gặp các dạng rối loạn ngôn ngữ khác nhau. Nhấp để tìm hiểu đặc điểm của từng loại.</p>
+                <div id="aphasia-tabs" class="flex flex-wrap gap-2 mb-4"></div>
+                <div id="aphasia-content" class="p-4 bg-sky-50 rounded-lg text-stone-700"></div>
+            </div>
+            
+            <div id="communication-strategies"></div>
+        </section>
+
+        <section id="tu-duy" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="cognitionSpiritTitle">Nuôi Dưỡng Tư Duy & Tinh Thần</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="cognitionSpiritDesc">Vượt qua trạng thái "bị động" và "bất lực học được" là một cuộc chiến quan trọng. Các bài tập nhận thức và hỗ trợ cảm xúc giúp bệnh nhân tái kích hoạt tư duy, tìm lại niềm vui và chủ động tham gia vào cuộc sống.</p>
+            </div>
+            
+            <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-r-lg mb-8" role="alert">
+                <p class="font-bold" data-i18n="learnedHelplessnessTitle">Chống lại "Bất Lực Học Được"</p>
+                <p data-i18n="learnedHelplessnessDesc">Đây là trạng thái tâm lý khiến bệnh nhân tin rằng họ không thể kiểm soát hoàn cảnh, dẫn đến bị động. Bằng cách khuyến khích các lựa chọn nhỏ, cho phép tự làm và khen ngợi nỗ lực, chúng ta có thể phá vỡ vòng luẩn quẩn này và trao quyền cho bệnh nhân.</p>
+            </div>
+
+            <div id="cognitive-emotional-content"></div>
+        </section>
+
+        <section id="cham-soc" class="content-section">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="dailyCareTitle">Chăm Sóc Toàn Diện Hàng Ngày</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="dailyCareDesc">Chăm sóc hàng ngày là nền tảng vững chắc cho quá trình phục hồi. Việc chú ý đến dinh dưỡng, vệ sinh, và phòng ngừa biến chứng không chỉ duy trì sức khỏe thể chất mà còn thể hiện sự quan tâm, tôn trọng phẩm giá của người bệnh.</p>
+            </div>
+
+            <div id="daily-care-content"></div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-stone-800 text-stone-300 py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p data-i18n="disclaimer1">Thông tin trong ứng dụng này mang tính tham khảo, không thay thế cho chẩn đoán và chỉ định của chuyên gia y tế.</p>
+            <p class="text-sm mt-2" data-i18n="disclaimer2">Luôn tham vấn bác sĩ và các nhà trị liệu để có kế hoạch chăm sóc phù hợp nhất.</p>
+            <p class="text-sm mt-2" data-i18n="copyright">Copyright © 2025 Nhật Phan. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const translations = {
+        vi: {
+            appTitle: "Cẩm Nang Phục Hồi Sau Đột Quỵ",
+            navOverview: "Tổng Quan",
+            navMotorSkills: "Vận Động",
+            navCommunication: "Giao Tiếp",
+            navCognitionEmotion: "Tư Duy & Tinh Thần",
+            navDailyCare: "Chăm Sóc Hàng Ngày",
+            journeyTitle: "Hành Trình Phục Hồi Toàn Diện",
+            journeyDesc: "Phục hồi sau đột quỵ là một quá trình lâu dài, đòi hỏi sự kiên trì và một cách tiếp cận toàn diện. Ứng dụng này cung cấp các chiến lược và thông tin cần thiết để hỗ trợ người chăm sóc, giúp bệnh nhân tối đa hóa khả năng phục hồi, từ vận động, giao tiếp đến tư duy và tinh thần, nhằm nâng cao chất lượng cuộc sống.",
+            brunnstromTitle: "Các Giai Đoạn Phục Hồi Vận Động (Brunnstrom)",
+            brunnstromDesc: "Hiểu rõ các giai đoạn phục hồi giúp bạn nhận biết tiến triển và lựa chọn bài tập phù hợp. Sự xuất hiện của co cứng (Giai đoạn 2-3) là một dấu hiệu tích cực, cho thấy não bộ đang tái tạo kết nối thần kinh. Hãy nhấp vào từng giai đoạn để xem chi tiết.",
+            factorsTitle: "Yếu Tố Ảnh Hưởng Đến Phục Hồi",
+            factorsDesc: "Nhiều yếu tố tác động đến quá trình phục hồi. Việc can thiệp sớm và tích cực vào các yếu tố có thể thay đổi sẽ cải thiện đáng kể tiên lượng cho bệnh nhân.",
+            conditionsTitle: "Các Vấn Đề Phổ Biến Sau Đột Quỵ",
+            conditionsDesc: "Bệnh nhân thường đối mặt với nhiều thách thức về thể chất và tâm lý. Nhận biết sớm các vấn đề này là bước đầu tiên để có biện pháp can thiệp phù hợp.",
+            motorRehabTitle: "Phục Hồi Chức Năng Vận Động",
+            motorRehabDesc: "Vật lý trị liệu sớm và liên tục là chìa khóa để lấy lại khả năng vận động, ngăn ngừa biến chứng và giúp bệnh nhân từng bước độc lập. Mục tiêu là tiến triển từ các bài tập thụ động sang chủ động, từ nằm trên giường đến di chuyển.",
+            commImproveTitle: "Cải Thiện Khả Năng Giao Tiếp",
+            commImproveDesc: "Giao tiếp là cầu nối với thế giới. Khi lời nói gặp khó khăn, các liệu pháp ngôn ngữ và công nghệ hỗ trợ sẽ mở ra những cánh cửa mới, giúp bệnh nhân bày tỏ suy nghĩ, cảm xúc và giảm cảm giác bị cô lập.",
+            langDisorderTitle: "Các Dạng Rối Loạn Ngôn Ngữ Phổ Biến",
+            langDisorderDesc: "Tùy vào vùng não bị tổn thương, bệnh nhân có thể gặp các dạng rối loạn ngôn ngữ khác nhau. Nhấp để tìm hiểu đặc điểm của từng loại.",
+            cognitionSpiritTitle: "Nuôi Dưỡng Tư Duy & Tinh Thần",
+            cognitionSpiritDesc: "Vượt qua trạng thái \"bị động\" và \"bất lực học được\" là một cuộc chiến quan trọng. Các bài tập nhận thức và hỗ trợ cảm xúc giúp bệnh nhân tái kích hoạt tư duy, tìm lại niềm vui và chủ động tham gia vào cuộc sống.",
+            learnedHelplessnessTitle: "Chống lại \"Bất Lực Học Được\"",
+            learnedHelplessnessDesc: "Đây là trạng thái tâm lý khiến bệnh nhân tin rằng họ không thể kiểm soát hoàn cảnh, dẫn đến bị động. Bằng cách khuyến khích các lựa chọn nhỏ, cho phép tự làm và khen ngợi nỗ lực, chúng ta có thể phá vỡ vòng luẩn quẩn này và trao quyền cho bệnh nhân.",
+            dailyCareTitle: "Chăm Sóc Toàn Diện Hàng Ngày",
+            dailyCareDesc: "Chăm sóc hàng ngày là nền tảng vững chắc cho quá trình phục hồi. Việc chú ý đến dinh dưỡng, vệ sinh, và phòng ngừa biến chứng không chỉ duy trì sức khỏe thể chất mà còn thể hiện sự quan tâm, tôn trọng phẩm giá của người bệnh.",
+            disclaimer1: "Thông tin trong ứng dụng này mang tính tham khảo, không thay thế cho chẩn đoán và chỉ định của chuyên gia y tế.",
+            disclaimer2: "Luôn tham vấn bác sĩ và các nhà trị liệu để có kế hoạch chăm sóc phù hợp nhất.",
+            copyright: "Copyright © 2025 Nhật Phan. All rights reserved.",
+            chartFactorsLabels: ['Mức độ tổn thương', 'Bệnh lý nền', 'Tuổi tác', 'Hỗ trợ tinh thần', 'Phục hồi chức năng sớm', 'Cường độ luyện tập'],
+            chartConditionsLabels: ['Trầm cảm', 'Lo âu', 'Mệt mỏi mạn tính', 'Rối loạn ngôn ngữ', 'Đau sau đột quỵ'],
+            chartFactorsTooltip: 'Mức độ',
+            chartConditionsTooltip: 'bệnh nhân',
+        },
+        en: {
+            appTitle: "Stroke Rehabilitation Handbook",
+            navOverview: "Overview",
+            navMotorSkills: "Motor Skills",
+            navCommunication: "Communication",
+            navCognitionEmotion: "Cognition & Emotion",
+            navDailyCare: "Daily Care",
+            journeyTitle: "Comprehensive Rehabilitation Journey",
+            journeyDesc: "Stroke recovery is a long journey, requiring perseverance and a holistic approach. This application provides essential strategies and information to support caregivers, helping patients maximize their recovery in motor skills, communication, cognition, and emotional well-being, thereby enhancing their quality of life.",
+            brunnstromTitle: "Brunnstrom Stages of Motor Recovery",
+            brunnstromDesc: "Understanding the recovery stages helps you recognize progress and choose appropriate exercises. The appearance of spasticity (Stages 2-3) is a positive sign, indicating the brain is reorganizing neural connections. Click on each stage for details.",
+            factorsTitle: "Factors Affecting Recovery",
+            factorsDesc: "Many factors influence the recovery process. Early and active intervention in modifiable factors can significantly improve the patient's prognosis.",
+            conditionsTitle: "Common Post-Stroke Issues",
+            conditionsDesc: "Patients often face various physical and psychological challenges. Early recognition of these issues is the first step towards appropriate interventions.",
+            motorRehabTitle: "Motor Function Rehabilitation",
+            motorRehabDesc: "Early and continuous physical therapy is key to regaining motor skills, preventing complications, and helping patients gradually become independent. The goal is to progress from passive to active exercises, from bedridden to mobile.",
+            commImproveTitle: "Improving Communication Ability",
+            commImproveDesc: "Communication is a bridge to the world. When speech is difficult, language therapies and assistive technologies open new doors, helping patients express thoughts and emotions and reduce feelings of isolation.",
+            langDisorderTitle: "Common Types of Language Disorders",
+            langDisorderDesc: "Depending on the affected brain area, patients may experience different types of language disorders. Click to learn about the characteristics of each type.",
+            cognitionSpiritTitle: "Nurturing Cognition & Spirit",
+            cognitionSpiritDesc: "Overcoming a state of \"passivity\" and \"learned helplessness\" is an important battle. Cognitive exercises and emotional support help patients reactivate their thinking, find joy, and actively participate in life.",
+            learnedHelplessnessTitle: "Combating \"Learned Helplessness\"",
+            learnedHelplessnessDesc: "This is a psychological state where patients believe they cannot control their circumstances, leading to passivity. By encouraging small choices, allowing self-reliance, and praising efforts, we can break this cycle and empower patients.",
+            dailyCareTitle: "Comprehensive Daily Care",
+            dailyCareDesc: "Daily care is the solid foundation for the recovery process. Paying attention to nutrition, hygiene, and complication prevention not only maintains physical health but also demonstrates care and respect for the patient's dignity.",
+            disclaimer1: "The information in this application is for reference purposes only and does not replace the diagnosis and prescription of medical professionals.",
+            disclaimer2: "Always consult doctors and therapists for the most suitable care plan.",
+            copyright: "Copyright © 2025 Nhat Phan. All rights reserved.",
+            chartFactorsLabels: ['Extent of Brain Damage', 'Underlying Conditions', 'Age', 'Emotional Support', 'Early Rehab', 'Intensity of Training'],
+            chartConditionsLabels: ['Depression', 'Anxiety', 'Chronic Fatigue', 'Language Disorder', 'Post-stroke Pain'],
+            chartFactorsTooltip: 'Level',
+            chartConditionsTooltip: 'patients',
+        }
+    };
+
+    let currentLang = 'vi'; // Default language
+
+    const appData = {
+        brunnstrom: [
+            { stage: 1, name: { vi: "Mềm nhũn", en: "Flaccidity" }, desc: { vi: "Không có cử động chủ động. Cơ bắp yếu, mềm. Giai đoạn này cần tập vận động thụ động để duy trì tầm vận động khớp và ngăn ngừa co rút.", en: "No active movement. Muscles are weak and flaccid. This stage requires passive range of motion exercises to maintain joint mobility and prevent contractures." } },
+            { stage: 2, name: { vi: "Co cứng xuất hiện", en: "Spasticity appears" }, desc: { vi: "Co cứng bắt đầu xuất hiện, có thể có co thắt cơ không tự chủ. Đây là dấu hiệu não đang tái tạo kết nối. Tiếp tục vận động thụ động và bắt đầu các bài tập chủ động có trợ giúp.", en: "Spasticity begins to appear, possibly with involuntary muscle spasms. This indicates the brain is re-establishing connections. Continue passive range of motion and begin assisted active exercises." } },
+            { stage: 3, name: { vi: "Co cứng tăng", en: "Increased spasticity" }, desc: { vi: "Co cứng đạt đỉnh điểm. Các cử động chủ động có thể xuất hiện nhưng thường là cử động liên kết. Cần tập trung vào việc kiểm soát các cử động này.", en: "Spasticity reaches its peak. Active movements may occur but are often synergistic movements. Focus on controlling these movements." } },
+            { stage: 4, name: { vi: "Co cứng giảm", en: "Decreased spasticity" }, desc: { vi: "Co cứng bắt đầu giảm. Bệnh nhân có thể thực hiện một số cử động độc lập, không còn bị ràng buộc hoàn toàn. Tăng cường các bài tập chủ động.", en: "Spasticity begins to decrease. Patients can perform some independent movements, no longer completely bound. Intensify active exercises." } },
+            { stage: 5, name: { vi: "Kết hợp phức tạp", en: "Complex movement combinations" }, desc: { vi: "Co cứng tiếp tục giảm. Bệnh nhân có thể thực hiện các chuyển động phức tạp hơn, phối hợp tốt hơn. Tập trung vào các bài tập chức năng.", en: "Spasticity continues to decrease. Patients can perform more complex, better coordinated movements. Focus on functional exercises." } },
+            { stage: 6, name: { vi: "Bình thường", en: "Normal" }, desc: { vi: "Co cứng không còn. Các cử động gần như bình thường về phối hợp và sức mạnh. Tiếp tục rèn luyện để hoàn thiện.", en: "Spasticity is absent. Movements are almost normal in coordination and strength. Continue training for full recovery." } },
+            { stage: 7, name: { vi: "Hoàn toàn bình thường", en: "Completely normal" }, desc: { vi: "Chức năng vận động trở lại hoàn toàn bình thường. Duy trì lối sống năng động để phòng ngừa tái phát.", en: "Motor function returns completely to normal. Maintain an active lifestyle to prevent recurrence." } }
+        ],
+        motorExercises: [
+            { 
+                category: { vi: "Bài Tập Tại Giường (Thụ động & Chủ động)", en: "Bed Exercises (Passive & Active)" },
+                icon: "🛌",
+                items: [
+                    { name: { vi: "Vận động thụ động các khớp", en: "Passive range of motion exercises for joints" }, desc: { vi: "Người chăm sóc nhẹ nhàng di chuyển các khớp vai, khuỷu, cổ tay, ngón tay, háng, gối, cổ chân của bên liệt để duy trì sự linh hoạt.", en: "Caregivers gently move the shoulder, elbow, wrist, finger, hip, knee, and ankle joints of the affected side to maintain flexibility." } },
+                    { name: { vi: "Tập lăn nghiêng", en: "Side rolling exercises" }, desc: { vi: "Dùng tay và chân lành để hỗ trợ lăn người sang bên liệt và bên lành. Giúp thay đổi tư thế và giảm áp lực.", en: "Use the unaffected arm and leg to assist rolling the body to the affected and unaffected sides. Helps change posture and reduce pressure." } },
+                    { name: { vi: "Tập làm cầu nối (Bắc cầu)", en: "Bridging exercise" }, desc: { vi: "Nằm ngửa, co hai gối, đặt hai bàn chân lên giường. Nâng hông lên khỏi giường. Giúp tăng cường sức mạnh cơ mông và lưng.", en: "Lie on your back, bend both knees, place both feet on the bed. Lift the hips off the bed. Helps strengthen gluteal and back muscles." } },
+                    { name: { vi: "Tập ngồi dậy", en: "Sitting up exercise" }, desc: { vi: "Từ tư thế nằm, dùng tay lành vịn vào thành giường hoặc một sợi dây để kéo người ngồi dậy. Chuẩn bị cho việc ra khỏi giường.", en: "From a lying position, use the unaffected arm to grasp the bed rail or a rope to pull oneself up to a sitting position. Prepares for getting out of bed." } }
+                ]
+            },
+            {
+                category: { vi: "Thiết Bị Hỗ Trợ Vận Động", en: "Motor Rehabilitation Equipment" },
+                icon: "🤖",
+                items: [
+                    { name: { vi: "Nẹp chỉnh hình", en: "Orthoses" }, desc: { vi: "Giữ khớp ở tư thế đúng, ngăn ngừa co rút (nẹp cổ chân, bàn tay). Hỗ trợ khi tập đứng và đi.", en: "Keeps joints in proper alignment, prevents contractures (ankle-foot orthosis, hand splint). Assists with standing and walking exercises." } },
+                    { name: { vi: "Robot phục hồi chức năng", en: "Rehabilitation Robots" }, desc: { vi: "Các thiết bị như Anymov, Reogo hỗ trợ các bài tập lặp đi lặp lại, chuyên sâu ngay cả khi bệnh nhân còn yếu, thúc đẩy tính mềm dẻo thần kinh.", en: "Devices like Anymov, Reogo support repetitive, intensive exercises even when the patient is weak, promoting neuroplasticity." } },
+                    { name: { vi: "Giường y tế đa năng", en: "Multi-functional Medical Bed" }, desc: { vi: "Hỗ trợ nâng đầu, chân, thay đổi tư thế dễ dàng, có thanh chắn an toàn và có thể kết hợp đệm chống loét.", en: "Supports head and leg elevation, easy posture changes, has safety rails, and can be combined with anti-decubitus mattresses." } },
+                    { name: { vi: "Kích thích điện chức năng (FES)", en: "Functional Electrical Stimulation (FES)" }, desc: { vi: "Dùng dòng điện nhẹ để kích thích các cơ bị yếu, giúp tái rèn luyện vận động.", en: "Uses mild electrical current to stimulate weakened muscles, aiding motor re-education." } }
+                ]
+            }
+        ],
+        aphasiaTypes: [
+            { 
+                id: "broca",
+                name: { vi: "Mất ngôn ngữ Broca (Vận động)", en: "Broca's Aphasia (Expressive)" }, 
+                desc: { vi: "Bệnh nhân hiểu lời nói nhưng gặp khó khăn khi diễn đạt. Lời nói ngắt quãng, chỉ nói được từ đơn hoặc câu ngắn. Thường nhận thức được khó khăn của mình và cảm thấy thất vọng.", en: "Patients understand speech but have difficulty expressing themselves. Speech is hesitant, with single words or short sentences. They are usually aware of their difficulties and feel frustrated." } 
+            },
+            { 
+                id: "wernicke",
+                name: { vi: "Mất ngôn ngữ Wernicke (Cảm giác)", en: "Wernicke's Aphasia (Receptive)" }, 
+                desc: { vi: "Bệnh nhân nói lưu loát nhưng câu nói thường vô nghĩa, dùng sai từ. Khả năng nghe hiểu kém. Thường không nhận ra lỗi sai trong lời nói của mình.", en: "Patients speak fluently, but their speech is often meaningless and uses incorrect words. Auditory comprehension is poor. They often do not recognize errors in their own speech." } 
+            },
+            { 
+                id: "global",
+                name: { vi: "Mất ngôn ngữ Toàn bộ", en: "Global Aphasia" }, 
+                desc: { vi: "Dạng nặng nhất, ảnh hưởng nghiêm trọng đến cả khả năng diễn đạt và thông hiểu. Bệnh nhân gần như không thể nói và không hiểu lời nói.", en: "The most severe form, significantly affecting both expressive and receptive language. Patients are almost unable to speak or understand speech." } 
+            },
+            { 
+                id: "dysarthria",
+                name: { vi: "Rối loạn vận ngôn (Nói khó)", en: "Dysarthria (Speech Difficulty)" }, 
+                desc: { vi: "Không phải vấn đề về ngôn ngữ mà là do yếu/liệt các cơ phát âm (lưỡi, môi, hàm). Lời nói bị méo, ngọng, nói chậm, khó nghe.", en: "Not a language problem, but due to weakness/paralysis of the speech muscles (tongue, lips, jaw). Speech is distorted, slurred, slow, and difficult to understand." } 
+            }
+        ],
+        communicationStrategies: [
+             {
+                category: { vi: "Liệu Pháp Ngôn Ngữ & Lời Nói", en: "Speech & Language Therapy" },
+                icon: "💬",
+                items: [
+                    { name: { vi: "Bài tập lặp từ và gọi tên", en: "Word Repetition and Naming Exercises" }, desc: { vi: "Sử dụng thẻ hình các vật dụng quen thuộc (ly nước, điện thoại, sách) hoặc ứng dụng trên máy tính bảng. Yêu cầu bệnh nhân gọi tên vật đó. Nếu khó, bạn có thể nói trước và yêu cầu bệnh nhân lặp lại. Ví dụ: 'Đây là cái gì?', 'Ông/Bà nói: CÁI BÀN'.", en: "Use picture cards of familiar items (water glass, phone, book) or tablet apps. Ask the patient to name the item. If difficult, you can say it first and ask the patient to repeat. Example: 'What is this?', 'Say: TABLE'." } },
+                    { name: { vi: "Luyện phát âm và làm ấm cơ miệng", en: "Articulation and Oral Motor Warm-up" }, desc: { vi: "Thực hiện các bài tập đơn giản như chu môi, mím môi, thổi má, thè lưỡi ra vào, di chuyển lưỡi sang hai bên. Sau đó, tập phát âm các nguyên âm (a, o, u, i, e) và các phụ âm đơn giản (ba, ma, ca).", en: "Perform simple exercises like puckering lips, pressing lips together, blowing cheeks, sticking tongue in and out, moving tongue side to side. Then, practice pronouncing vowels (a, o, u, i, e) and simple consonants (ba, ma, ca)." } },
+                    { name: { vi: "Hình thành câu và hội thoại có cấu trúc", en: "Sentence Formation and Structured Conversation" }, desc: { vi: "Bắt đầu bằng các câu hỏi 'Có/Không' ('Ông/Bà có đau không?', 'Ông/Bà có muốn uống nước không?'). Sau đó tăng dần độ phức tạp bằng cách yêu cầu bệnh nhân nói 1-2 từ để trả lời câu hỏi mở ('Ông/Bà muốn ăn gì?', 'Nước cam').", en: "Start with 'Yes/No' questions ('Are you in pain?', 'Do you want water?'). Then gradually increase complexity by asking the patient to say 1-2 words to answer open-ended questions ('What do you want to eat?', 'Orange juice')." } },
+                    { name: { vi: "Trò chơi từ ngữ & hát", en: "Word Games & Singing" }, desc: { vi: "Chơi các trò đơn giản như 'Tìm từ trái nghĩa' (nóng - lạnh, to - nhỏ) hoặc 'Mô tả đồ vật' (ví dụ: 'Con vật có lông, kêu meo meo là con gì?'). Hát các bài hát quen thuộc, đặc biệt là những bài cụ ông/bà yêu thích, để kích thích khả năng nói theo giai điệu.", en: "Play simple games like 'Find the opposite word' (hot - cold, big - small) or 'Describe an object' (e.g., 'What animal has fur and meows?'). Sing familiar songs, especially the patient's favorites, to stimulate speech through melody." } },
+                    { name: { vi: "Đọc to (với trợ giúp)", en: "Reading Aloud (with assistance)" }, desc: { vi: "Cùng bệnh nhân đọc to các đoạn văn ngắn, tiêu đề báo, truyện thiếu nhi. Bạn có thể đọc trước và bệnh nhân đọc theo, hoặc đọc từng câu và bệnh nhân đọc lại. Việc này giúp cải thiện sự lưu loát và tự tin.", en: "Read short passages, newspaper headlines, or children's stories aloud with the patient. You can read first and the patient follows, or read sentence by sentence and the patient repeats. This helps improve fluency and confidence." } }
+                ]
+            },
+            {
+                category: { vi: "Giao Tiếp Thay Thế & Tăng Cường (AAC)", en: "Augmentative and Alternative Communication (AAC)" },
+                icon: "📱",
+                items: [
+                    { name: { vi: "Công cụ Low-tech (Không công nghệ)", en: "Low-tech Tools" }, desc: { vi: "Sử dụng cử chỉ đơn giản (gật đầu, lắc đầu), nét mặt. Chuẩn bị bảng chữ cái lớn hoặc bảng hình ảnh các nhu cầu cơ bản (đói, khát, đi vệ sinh, đau) để bệnh nhân chỉ vào. Hoặc dùng giấy bút để bệnh nhân vẽ/viết nếu có thể.", en: "Use simple gestures (nodding, shaking head), facial expressions. Prepare large alphabet boards or picture boards for basic needs (hungry, thirsty, toilet, pain) for the patient to point to. Or use paper and pen for the patient to draw/write if possible." } },
+                    { name: { vi: "Ứng dụng di động & máy tính bảng", en: "Mobile & Tablet Applications" }, desc: { vi: "Cài đặt các ứng dụng giao tiếp chuyên dụng (ví dụ: Proloquo2Go, TouchChat, hoặc các ứng dụng tiếng Việt tương tự nếu có) cho phép bệnh nhân chọn biểu tượng hoặc gõ chữ để máy phát ra lời nói. Khuyến khích bệnh nhân sử dụng hàng ngày để yêu cầu đồ ăn, nước uống, hoặc bày tỏ cảm xúc.", en: "Install specialized communication apps (e.g., Proloquo2Go, TouchChat, or similar Vietnamese apps if available) that allow patients to select symbols or type text for the device to speak aloud. Encourage daily use for requesting food, drink, or expressing emotions." } },
+                    { name: { vi: "Thiết bị điều khiển bằng mắt (Eye-tracking devices)", en: "Eye-tracking Devices" }, desc: { vi: "Đối với bệnh nhân liệt nặng, không thể dùng tay hoặc nói. Thiết bị này cho phép bệnh nhân điều khiển con trỏ trên màn hình bằng ánh mắt, chọn chữ, biểu tượng, hoặc lướt web, gửi email. Đây là công cụ mạnh mẽ giúp bệnh nhân giao tiếp chủ động và kết nối lại với thế giới.", en: "For severely paralyzed patients who cannot use their hands or speak. These devices allow patients to control a cursor on screen with their eyes, select letters, symbols, or browse the web, send emails. This is a powerful tool to help patients communicate actively and reconnect with the world." } }
+                ]
+            }
+        ],
+        cognitiveEmotional: [
+            {
+                category: { vi: "Bài Tập Nhận Thức (Rèn Luyện Tư Duy)", en: "Cognitive Exercises (Mind Training)" },
+                icon: "🧠",
+                items: [
+                    { name: { vi: "Trò chơi trí nhớ: Gợi nhớ sự kiện & Vật dụng", en: "Memory Games: Recalling Events & Objects" }, desc: { vi: "Yêu cầu cụ ông kể về các sự kiện quan trọng trong quá khứ (ví dụ: ngày cưới, sinh nhật con cái), hoặc nhớ vị trí các vật dụng quen thuộc trong phòng (ví dụ: cái kính, điều khiển TV). Có thể sử dụng ảnh gia đình cũ để gợi mở.", en: "Ask the patient to recall important past events (e.g., wedding day, children's birthdays), or remember the location of familiar objects in the room (e.g., glasses, TV remote). Old family photos can be used as prompts." } },
+                    { name: { vi: "Giải quyết vấn đề: Lựa chọn đơn giản", en: "Problem Solving: Simple Choices" }, desc: { vi: "Đưa ra các lựa chọn nhỏ hàng ngày để cụ ông tự quyết định (ví dụ: 'Ông muốn mặc áo màu xanh hay màu ghi?', 'Ông muốn ăn cháo hay súp?'). Bắt đầu với 2-3 lựa chọn và tăng dần khi cụ ông quen.", en: "Offer small daily choices for the patient to decide (e.g., 'Do you want to wear the blue shirt or the gray one?', 'Do you want porridge or soup?'). Start with 2-3 options and gradually increase as the patient becomes accustomed." } },
+                    { name: { vi: "Bài tập chú ý & tập trung: Tìm kiếm & Nghe", en: "Attention & Focus Exercises: Searching & Listening" }, desc: { vi: "Yêu cầu cụ ông tìm một vật cụ thể trong tầm nhìn (ví dụ: 'Con chuột bông của ông đâu?'). Hoặc bật một bản nhạc cụ và hỏi 'Đây là nhạc cụ gì?', 'Ông có thích không?'", en: "Ask the patient to find a specific object within sight (e.g., 'Where is your teddy bear?'). Or play an instrumental piece and ask 'What instrument is this?', 'Do you like it?'" } },
+                    { name: { vi: "Tích hợp vào sinh hoạt: Tham gia quyết định", en: "Integration into Daily Life: Participatory Decisions" }, desc: { vi: "Hỏi ý kiến cụ ông về các hoạt động trong ngày (ví dụ: 'Chiều nay ông muốn nghe đài hay xem TV?'), hoặc về các món ăn sắp tới. Dù chỉ là một cái gật đầu hay ra dấu hiệu cũng là một sự tham gia tích cực.", en: "Ask the patient's opinion on daily activities (e.g., 'Do you want to listen to the radio or watch TV this afternoon?'), or upcoming meals. Even a nod or a gesture is active participation." } },
+                    { name: { vi: "Trò chơi logic nhẹ nhàng: Xếp hình đơn giản", en: "Gentle Logic Games: Simple Puzzles" }, desc: { vi: "Sử dụng các bộ ghép hình (puzzle) có ít mảnh (5-10 mảnh) và hình ảnh rõ ràng, quen thuộc. Hoặc các khối gỗ đơn giản để cụ ông tự xếp theo ý mình hoặc theo mẫu.", en: "Use puzzles with few pieces (5-10 pieces) and clear, familiar images. Or simple wooden blocks for the patient to arrange as desired or according to a pattern." } },
+                    { name: { vi: "Kể chuyện: Nghe và kể lại", en: "Storytelling: Listen and Retell" }, desc: { vi: "Người chăm sóc đọc hoặc kể một câu chuyện ngắn, sau đó hỏi cụ ông tóm tắt hoặc kể lại các chi tiết chính. Có thể sử dụng sách thiếu nhi với hình ảnh minh họa rõ ràng để hỗ trợ.", en: "The caregiver reads or tells a short story, then asks the patient to summarize or retell key details. Children's books with clear illustrations can be used to assist." } }
+                ]
+            },
+            {
+                category: { vi: "Hỗ Trợ Tinh Thần & Cảm Xúc", en: "Emotional & Mental Support" },
+                icon: "❤️",
+                items: [
+                    { name: { vi: "Nhận biết & Biểu hiện cảm xúc: Bảng cảm xúc", en: "Recognizing & Expressing Emotions: Emotion Chart" }, desc: { vi: "Sử dụng một bảng có các biểu tượng cảm xúc (vui, buồn, tức giận, sợ hãi, mệt mỏi) để cụ ông có thể chỉ vào, thay vì phải nói. Điều này giúp cụ ông dễ dàng bày tỏ trạng thái của mình.", en: "Use a chart with emotion icons (happy, sad, angry, scared, tired) for the patient to point to, instead of speaking. This helps the patient express their state more easily." } },
+                    { name: { vi: "Liệu pháp sáng tạo: Vẽ nguệch ngoạc & Tô màu", en: "Creative Therapy: Doodling & Coloring" }, desc: { vi: "Cung cấp giấy, bút chì màu/sáp để cụ ông tự do vẽ nguệch ngoạc hoặc tô màu các hình vẽ đơn giản. Đây là một cách tuyệt vời để giải tỏa cảm xúc và kích thích tư duy mà không cần lời nói.", en: "Provide paper, colored pencils/crayons for the patient to freely doodle or color simple drawings. This is a great way to release emotions and stimulate thinking without needing words." } },
+                    { name: { vi: "Kết nối xã hội: Video call & Chia sẻ", en: "Social Connection: Video Calls & Sharing" }, desc: { vi: "Thường xuyên gọi video cho người thân, bạn bè để cụ ông có cơ hội tương tác. Người chăm sóc có thể kể cho cụ ông nghe những câu chuyện, tin tức trong gia đình, hàng xóm để cụ ông không cảm thấy bị bỏ lại.", en: "Regularly make video calls to family and friends for the patient to interact. Caregivers can tell the patient stories and news from family and neighbors so the patient doesn't feel left out." } },
+                    { name: { vi: "Liệu pháp âm nhạc: Nhạc tuổi thơ", en: "Music Therapy: Childhood Music" }, desc: { vi: "Bật những bản nhạc cụ ông yêu thích thời trẻ. Âm nhạc có khả năng mạnh mẽ trong việc kích hoạt trí nhớ, gợi lại cảm xúc tích cực và giảm căng thẳng.", en: "Play the patient's favorite music from their youth. Music has a powerful ability to trigger memories, evoke positive emotions, and reduce stress." } },
+                    { name: { vi: "Massage nhẹ nhàng & Thư giãn", en: "Gentle Massage & Relaxation" }, desc: { vi: "Thực hiện massage nhẹ nhàng ở tay, chân, đầu hoặc lưng với dầu thơm để giúp cụ ông thư giãn, giảm đau nhức và cảm thấy được vỗ về, quan tâm.", en: "Perform gentle massage on the hands, feet, head, or back with essential oils to help the patient relax, reduce pain, and feel comforted and cared for." } },
+                    { name: { vi: "Động viên & Khen ngợi: Ghi nhận mọi nỗ lực", en: "Encouragement & Praise: Acknowledging Every Effort" }, desc: { vi: "Dù là một cử động nhỏ, một tiếng nói khẽ hay một sự lựa chọn đơn giản, hãy luôn ghi nhận và khen ngợi cụ ông. Điều này củng cố tinh thần, giúp cụ ông cảm thấy có giá trị và có động lực để tiếp tục cố gắng.", en: "Even a small movement, a soft word, or a simple choice, always acknowledge and praise the patient. This strengthens their spirit, helps them feel valued, and motivates them to continue trying." } }
+                ]
+            }
+        ],
+        dailyCare: [
+            {
+                category: { vi: "Phòng Ngừa Biến Chứng", en: "Complication Prevention" },
+                icon: "🛡️",
+                items: [
+                    { name: { vi: "Chống loét tì đè", en: "Preventing Pressure Ulcers" }, desc: { vi: "Quan trọng nhất: xoay trở bệnh nhân mỗi 2 giờ. Giữ da sạch và khô. Sử dụng nệm hơi hoặc đệm nước.", en: "Most importantly: turn the patient every 2 hours. Keep skin clean and dry. Use an air or water mattress." } },
+                    { name: { vi: "Phòng viêm phổi hít", en: "Preventing Aspiration Pneumonia" }, desc: { vi: "Cho ăn ở tư thế ngồi thẳng. Thức ăn mềm, sệt. Vỗ rung lưng giúp long đờm. Tập hít thở sâu.", en: "Feed in an upright sitting position. Food should be soft and thickened. Percuss the back to loosen phlegm. Practice deep breathing exercises." } },
+                    { name: { vi: "Chống co rút khớp", en: "Preventing Joint Contractures" }, desc: { vi: "Thực hiện các bài tập vận động thụ động hàng ngày. Sử dụng nẹp để giữ khớp ở tư thế duỗi khi nghỉ ngơi.", en: "Perform daily passive range of motion exercises. Use splints to keep joints in an extended position when resting." } },
+                    { name: { vi: "Kiểm soát tiểu tiện/đại tiện", en: "Managing Bladder/Bowel Function" }, desc: { vi: "Vệ sinh sạch sẽ sau mỗi lần đi vệ sinh. Sử dụng tã lót phù hợp. Chế độ ăn giàu chất xơ để chống táo bón.", en: "Clean thoroughly after each bowel movement/urination. Use appropriate diapers/pads. A high-fiber diet to prevent constipation." } }
+                ]
+            },
+            {
+                category: { vi: "Dinh Dưỡng & Vệ Sinh", en: "Nutrition & Hygiene" },
+                icon: "🍎",
+                items: [
+                    { name: { vi: "Chế độ ăn uống", en: "Dietary Regimen" }, desc: { vi: "Đủ chất, cân bằng. Ưu tiên rau xanh, trái cây, cá. Thức ăn nên được nấu mềm, xay nhuyễn nếu khó nuốt. Hạn chế muối, đường, chất béo bão hòa.", en: "Balanced and sufficient nutrients. Prioritize green vegetables, fruits, fish. Food should be soft, pureed if swallowing is difficult. Limit salt, sugar, saturated fats." } },
+                    { name: { vi: "Cách cho ăn an toàn", en: "Safe Feeding Practices" }, desc: { vi: "Luôn cho ăn ở tư thế ngồi (đầu cao 45-90 độ). Ăn chậm, từng miếng nhỏ, đảm bảo nuốt hết mới cho ăn tiếp.", en: "Always feed in a sitting position (head elevated 45-90 degrees). Feed slowly, in small bites, ensuring patient swallows completely before the next bite." } },
+                    { name: { vi: "Vệ sinh cá nhân", en: "Personal Hygiene" }, desc: { vi: "Tắm rửa trong phòng kín gió, nước ấm. Chú ý vệ sinh răng miệng hàng ngày để ngăn ngừa nhiễm trùng.", en: "Bathe in a draft-free room with warm water. Pay attention to daily oral hygiene to prevent infections." } },
+                    { name: { vi: "Môi trường sống", en: "Living Environment" }, desc: { vi: "Phòng ốc thoáng đãng, đủ ánh sáng, an toàn (tránh vật cản, sàn nhà trơn trượt). Đặt các vật dụng cần thiết trong tầm với của bệnh nhân.", en: "Room should be airy, well-lit, safe (avoid obstacles, slippery floors). Place essential items within the patient's reach." } }
+                ]
+            }
+        ]
+    };
+
+    const navLinks = document.querySelectorAll('#main-nav a');
+    const sections = document.querySelectorAll('.content-section');
+    const langViBtn = document.getElementById('lang-vi-btn');
+    const langEnBtn = document.getElementById('lang-en-btn');
+
+    let factorsChartInstance = null;
+    let conditionsChartInstance = null;
+
+    function updateNav(sectionId) {
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.section === sectionId);
+        });
+        sections.forEach(section => {
+            section.classList.toggle('active', section.id === sectionId);
+        });
+    }
+
+    function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[currentLang][key]) {
+                element.textContent = translations[currentLang][key];
+            }
+        });
+
+        // Update active language button styles
+        langViBtn.classList.toggle('bg-sky-100', currentLang === 'vi');
+        langViBtn.classList.toggle('text-sky-700', currentLang === 'vi');
+        langViBtn.classList.toggle('border-sky-300', currentLang === 'vi');
+        langViBtn.classList.toggle('bg-white', currentLang === 'en');
+        langViBtn.classList.toggle('text-stone-600', currentLang === 'en');
+        langViBtn.classList.toggle('border-stone-300', currentLang === 'en');
+
+        langEnBtn.classList.toggle('bg-sky-100', currentLang === 'en');
+        langEnBtn.classList.toggle('text-sky-700', currentLang === 'en');
+        langEnBtn.classList.toggle('border-sky-300', currentLang === 'en');
+        langEnBtn.classList.toggle('bg-white', currentLang === 'vi');
+        langEnBtn.classList.toggle('text-stone-600', currentLang === 'vi');
+        langEnBtn.classList.toggle('border-stone-300', currentLang === 'vi');
+
+
+        // Re-render accordions and other dynamic content that uses appData
+        document.getElementById('motor-exercises').innerHTML = '';
+        createAccordion(appData.motorExercises, 'motor-exercises', 'category', 'name', 'desc');
+        
+        document.getElementById('communication-strategies').innerHTML = '';
+        createAccordion(appData.communicationStrategies, 'communication-strategies', 'category', 'name', 'desc');
+        
+        document.getElementById('cognitive-emotional-content').innerHTML = '';
+        createAccordion(appData.cognitiveEmotional, 'cognitive-emotional-content', 'category', 'name', 'desc');
+        
+        document.getElementById('daily-care-content').innerHTML = '';
+        createAccordion(appData.dailyCare, 'daily-care-content', 'category', 'name', 'desc');
+
+        initBrunnstrom(); // Re-initialize Brunnstrom stages
+        initAphasiaTabs(); // Re-initialize Aphasia tabs
+        updateCharts(); // Update chart labels
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang; // Update HTML lang attribute
+        applyTranslations();
+    }
+
+    langViBtn.addEventListener('click', () => setLanguage('vi'));
+    langEnBtn.addEventListener('click', () => setLanguage('en'));
+
+    function createAccordion(data, containerId, categoryKey, nameKey, descKey) {
+        const container = document.getElementById(containerId);
+        data.forEach(category => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'bg-white rounded-lg shadow-md mb-6';
+            categoryDiv.innerHTML = `
+                <button class="accordion-button w-full text-left p-4 flex justify-between items-center bg-stone-100 hover:bg-stone-200 transition duration-300 rounded-t-lg">
+                    <span class="text-xl font-semibold text-sky-700 flex items-center">
+                        <span class="mr-3 text-2xl">${category.icon}</span>
+                        ${category[categoryKey][currentLang]}
+                    </span>
+                    <span class="transform transition-transform duration-300 text-sky-600 text-2xl font-light">+</span>
+                </button>
+                <div class="accordion-content">
+                    <ul class="p-4 border-t border-stone-200">
+                        ${category.items.map(item => `
+                            <li class="py-3 border-b border-stone-100 last:border-b-0">
+                                <p class="font-semibold text-stone-700">${item[nameKey][currentLang]}</p>
+                                <p class="text-stone-600 text-sm">${item[descKey][currentLang]}</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+            container.appendChild(categoryDiv);
+        });
+        // Re-attach event listeners for newly created accordion buttons
+        document.querySelectorAll(`#${containerId} .accordion-button`).forEach(button => {
+            button.addEventListener('click', () => {
+                const wasOpen = button.classList.contains('open');
+                // Close all other accordions
+                document.querySelectorAll('.accordion-button').forEach(btn => {
+                    btn.classList.remove('open');
+                    btn.querySelector('span:last-child').textContent = '+';
+                    btn.querySelector('span:last-child').classList.remove('rotate-45');
+                });
+
+                if (!wasOpen) {
+                    button.classList.add('open');
+                    button.querySelector('span:last-child').textContent = '';
+                    button.querySelector('span:last-child').innerHTML = '&times;';
+                    button.querySelector('span:last-child').classList.add('rotate-45');
+                }
+            });
+        });
+    }
+    
+    // Initial creation (will be called again by applyTranslations)
+    createAccordion(appData.motorExercises, 'motor-exercises', 'category', 'name', 'desc');
+    createAccordion(appData.communicationStrategies, 'communication-strategies', 'category', 'name', 'desc');
+    createAccordion(appData.cognitiveEmotional, 'cognitive-emotional-content', 'category', 'name', 'desc');
+    createAccordion(appData.dailyCare, 'daily-care-content', 'category', 'name', 'desc');
+    
+    function initBrunnstrom() {
+        const container = document.getElementById('brunnstrom-stages');
+        const detailsDiv = document.getElementById('brunnstrom-details');
+        container.innerHTML = ''; // Clear existing content
+
+        appData.brunnstrom.forEach(stage => {
+            const stageDiv = document.createElement('div');
+            stageDiv.className = 'p-2 border-2 border-stone-200 rounded-lg cursor-pointer hover:bg-amber-100 hover:border-amber-400 transition duration-300 flex flex-col justify-center';
+            stageDiv.dataset.stage = stage.stage;
+            stageDiv.innerHTML = `<span class="font-bold text-lg text-sky-600">${stage.stage}</span><span>${stage.name[currentLang]}</span>`;
+            container.appendChild(stageDiv);
+        });
+
+        function updateDetails(stageNum) {
+            const stageData = appData.brunnstrom.find(s => s.stage == stageNum);
+            detailsDiv.innerHTML = `<p class="font-semibold">${stageData.stage}. ${stageData.name[currentLang]}</p><p>${stageData.desc[currentLang]}</p>`;
+            container.querySelectorAll('div').forEach(div => {
+                div.classList.toggle('bg-amber-200', div.dataset.stage == stageNum);
+                div.classList.toggle('border-amber-500', div.dataset.stage == stageNum);
+            });
+        }
+
+        // Remove old event listener before adding new one to prevent duplicates
+        const oldBrunnstromListener = container.dataset.listener;
+        if (oldBrunnstromListener) {
+            container.removeEventListener('click', eval(oldBrunnstromListener));
+        }
+        const newListener = function(e) {
+            const target = e.target.closest('div[data-stage]');
+            if (target) {
+                updateDetails(target.dataset.stage);
+            }
+        };
+        container.addEventListener('click', newListener);
+        container.dataset.listener = newListener.name; // Store reference
+
+        updateDetails(1);
+    }
+    
+    function initAphasiaTabs() {
+        const tabsContainer = document.getElementById('aphasia-tabs');
+        const contentContainer = document.getElementById('aphasia-content');
+        tabsContainer.innerHTML = ''; // Clear existing content
+        
+        appData.aphasiaTypes.forEach(type => {
+            const button = document.createElement('button');
+            button.className = 'aphasia-tab-btn px-3 py-1 text-sm font-medium text-stone-600 bg-white border border-stone-300 rounded-full hover:bg-sky-100 hover:border-sky-400 transition';
+            button.dataset.type = type.id;
+            button.textContent = type.name[currentLang];
+            tabsContainer.appendChild(button);
+        });
+
+        function updateContent(typeId) {
+            const typeData = appData.aphasiaTypes.find(t => t.id === typeId);
+            contentContainer.innerHTML = `<p class="font-semibold">${typeData.name[currentLang]}</p><p>${typeData.desc[currentLang]}</p>`;
+            tabsContainer.querySelectorAll('button').forEach(btn => {
+                btn.classList.toggle('bg-sky-600', btn.dataset.type === typeId);
+                btn.classList.toggle('text-white', btn.dataset.type === typeId);
+                btn.classList.toggle('border-sky-600', btn.dataset.type === typeId);
+            });
+        }
+
+        // Remove old event listener before adding new one
+        const oldAphasiaListener = tabsContainer.dataset.listener;
+        if (oldAphasiaListener) {
+            tabsContainer.removeEventListener('click', eval(oldAphasiaListener));
+        }
+        const newListener = function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                updateContent(e.target.dataset.type);
+            }
+        };
+        tabsContainer.addEventListener('click', newListener);
+        tabsContainer.dataset.listener = newListener.name; // Store reference
+
+        updateContent('broca');
+    }
+
+    function updateCharts() {
+        if (factorsChartInstance) factorsChartInstance.destroy();
+        if (conditionsChartInstance) conditionsChartInstance.destroy();
+
+        const factorsCtx = document.getElementById('factorsChart').getContext('2d');
+        factorsChartInstance = new Chart(factorsCtx, {
+            type: 'bar',
+            data: {
+                labels: translations[currentLang].chartFactorsLabels,
+                datasets: [{
+                    label: translations[currentLang].chartFactorsTooltip,
+                    data: [95, 75, 70, 85, 90, 88],
+                    backgroundColor: ['#f59e0b', '#f59e0b', '#f59e0b', '#0ea5e9', '#0ea5e9', '#0ea5e9'],
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += `${translations[currentLang].chartFactorsTooltip} ${context.parsed.x}`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { suggestedMax: 100, grid: { color: '#e7e5e4' } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        const conditionsCtx = document.getElementById('conditionsChart').getContext('2d');
+        conditionsChartInstance = new Chart(conditionsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: translations[currentLang].chartConditionsLabels,
+                datasets: [{
+                    label: translations[currentLang].chartConditionsTooltip,
+                    data: [35, 25, 50, 66, 40],
+                    backgroundColor: ['#0284c7', '#38bdf8', '#7dd3fc', '#f59e0b', '#fbbf24'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15 }
+                    },
+                    title: { display: false },
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += `~${context.parsed}% ${translations[currentLang].chartConditionsTooltip}`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function handleRouting() {
+        const hash = window.location.hash.replace('#', '');
+        const validSections = ['tong-quan', 'van-dong', 'giao-tiep', 'tu-duy', 'cham-soc'];
+        const sectionId = validSections.includes(hash) ? hash : 'tong-quan';
+        updateNav(sectionId);
+    }
+
+    window.addEventListener('popstate', handleRouting);
+    
+    // Initial load
+    applyTranslations(); // Apply initial language (vi)
+    handleRouting();
+    updateCharts(); // Initialize charts with correct labels
+});
+</script>
+
+</body>
+</html>
