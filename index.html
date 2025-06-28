@@ -52,6 +52,13 @@
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-stone-800 mb-4" data-i18n="journeyTitle">Hành Trình Phục Hồi Toàn Diện</h2>
                 <p class="max-w-3xl mx-auto text-lg text-stone-600" data-i18n="journeyDesc">Phục hồi sau đột quỵ là một quá trình lâu dài, đòi hỏi sự kiên trì và một cách tiếp cận toàn diện. Ứng dụng này cung cấp các chiến lược và thông tin cần thiết để hỗ trợ người chăm sóc, giúp bệnh nhân tối đa hóa khả năng phục hồi, từ vận động, giao tiếp đến tư duy và tinh thần, nhằm nâng cao chất lượng cuộc sống.</p>
+                <!-- Audio player for overview introduction -->
+                <div class="mt-6">
+                    <audio controls class="w-full max-w-sm mx-auto">
+                        <source src="giothieutongquan.wav" type="audio/wav">
+                        Trình duyệt của bạn không hỗ trợ phần tử audio.
+                    </audio>
+                </div>
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -155,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         motorExercises: [
             { 
                 category: { vi: "Bài Tập Tại Giường (Thụ động & Chủ động)", en: "Bed Exercises (Passive & Active)" },
-                icon: "�",
+                icon: "🛌",
                 items: [
                     { name: { vi: "Vận động thụ động các khớp", en: "Passive range of motion exercises for joints" }, desc: { vi: "Người chăm sóc nhẹ nhàng di chuyển các khớp vai, khuỷu, cổ tay, ngón tay, háng, gối, cổ chân của bên liệt để duy trì sự linh hoạt.", en: "Caregivers gently move the shoulder, elbow, wrist, finger, hip, knee, and ankle joints of the affected side to maintain flexibility." } },
                     { name: { vi: "Tập lăn nghiêng", en: "Side rolling exercises" }, desc: { vi: "Dùng tay và chân lành để hỗ trợ lăn người sang bên liệt và bên lành. Giúp thay đổi tư thế và giảm áp lực.", en: "Use the unaffected arm and leg to assist rolling the body to the affected and unaffected sides. Helps change posture and reduce pressure." } },
